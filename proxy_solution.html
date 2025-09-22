@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text-to-Speech with Proxy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: white;
+            min-height: 100vh;
+        }
+        .container {
+            background: rgba(25, 35, 60, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+        button {
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        button:hover {
+            background: linear-gradient(45deg, #3a0ca3, #4361ee);
+            transform: translateY(-2px);
+        }
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff6b6b;
+        }
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #51cf66;
+        }
+        audio {
+            width: 100%;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎤 Text-to-Speech with Proxy</h1>
+        
+        <textarea id="textInput" placeholder="Enter your text here...">Hello, this is a test of the text-to-speech system.</textarea>
+        
+        <div>
+            <button onclick="generateSpeech()" id="generateBtn">Generate Speech</button>
+            <button onclick="testDirectAPI()" id="testBtn">Test Direct API</button>
+            <button onclick="testProxy()" id="proxyBtn">Test Proxy</button>
+        </div>
+        
+        <div id="result" class="result" style="display: none;"></div>
+        <audio id="audioPlayer" controls style="display: none;"></audio>
+    </div>
+
+    <script>
+        const API_URL = 'https://b38a617yef.execute-api.us-east-1.amazonaws.com/dev/tts';
+        
+        function showResult(message, isError = false) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = message;
+            resultDiv.className = `result ${isError ? 'error' : 'success'}`;
+            resultDiv.style.display = 'block';
+        }
+        
+        async function testDirectAPI() {
+            showResult('Testing direct API connection...');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ text: 'Test' })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showResult(`✅ Direct API works! Response: ${JSON.stringify(data).substring(0, 100)}...`);
+            } catch (error) {
+                showResult(`❌ Direct API failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+        
+        async function testProxy() {
+            showResult('Testing proxy connection...');
+            
+            try {
+                // Try using a different approach - maybe the issue is with the specific endpoint
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/' + API_URL;
+                
+                const response = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify({ text: 'Test' })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                showResult(`✅ Proxy works! Response: ${JSON.stringify(data).substring(0, 100)}...`);
+            } catch (error) {
+                showResult(`❌ Proxy failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+        
+        async function generateSpeech() {
+            const text = document.getElementById('textInput').value.trim();
+            if (!text) {
+                showResult('Please enter some text', true);
+                return;
+            }
+            
+            const generateBtn = document.getElementById('generateBtn');
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+            
+            showResult('Generating speech...');
+            
+            try {
+                // Try direct API first
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.s3_url) {
+                    const audioPlayer = document.getElementById('audioPlayer');
+                    audioPlayer.src = data.s3_url;
+                    audioPlayer.style.display = 'block';
+                    showResult(`✅ Speech generated successfully!`);
+                } else {
+                    throw new Error('No audio URL in response');
+                }
+                
+            } catch (error) {
+                showResult(`❌ Failed to generate speech: ${error.name} - ${error.message}`, true);
+                
+                // Try fallback - use browser's built-in speech synthesis
+                try {
+                    showResult('Trying browser speech synthesis as fallback...');
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1;
+                    utterance.volume = 1;
+                    
+                    speechSynthesis.speak(utterance);
+                    showResult('✅ Using browser speech synthesis (fallback)');
+                } catch (fallbackError) {
+                    showResult(`❌ Both API and fallback failed: ${fallbackError.message}`, true);
+                }
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'Generate Speech';
+            }
+        }
+        
+        // Test on page load
+        window.onload = function() {
+            showResult('Page loaded. Click "Test Direct API" to check connectivity.');
+        };
+    </script>
+</body>
+</html>

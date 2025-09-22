@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 3px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .result { margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 3px; }
+        .error { background: #f8d7da; color: #721c24; }
+        .success { background: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+    <h1>API Debug Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: Basic Connectivity</h3>
+        <button onclick="testConnectivity()">Test Basic Connection</button>
+        <div id="connectivity-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 2: CORS Preflight</h3>
+        <button onclick="testCORS()">Test CORS Preflight</button>
+        <div id="cors-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 3: Full API Call</h3>
+        <button onclick="testFullAPI()">Test Full API Call</button>
+        <div id="api-result" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Test 4: Alternative Endpoint</h3>
+        <button onclick="testAlternative()">Test Alternative Endpoint</button>
+        <div id="alt-result" class="result"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://b38a617yef.execute-api.us-east-1.amazonaws.com/dev/tts';
+        
+        function logResult(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.innerHTML = message;
+            element.className = `result ${isError ? 'error' : 'success'}`;
+        }
+        
+        async function testConnectivity() {
+            logResult('connectivity-result', 'Testing basic connectivity...');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'HEAD',
+                    mode: 'no-cors'
+                });
+                logResult('connectivity-result', '✅ Basic connectivity works!');
+            } catch (error) {
+                logResult('connectivity-result', `❌ Connectivity failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+        
+        async function testCORS() {
+            logResult('cors-result', 'Testing CORS preflight...');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'OPTIONS',
+                    mode: 'cors',
+                    headers: {
+                        'Origin': window.location.origin,
+                        'Access-Control-Request-Method': 'POST',
+                        'Access-Control-Request-Headers': 'Content-Type, Accept'
+                    }
+                });
+                
+                const corsHeaders = {
+                    'Access-Control-Allow-Origin': response.headers.get('Access-Control-Allow-Origin'),
+                    'Access-Control-Allow-Methods': response.headers.get('Access-Control-Allow-Methods'),
+                    'Access-Control-Allow-Headers': response.headers.get('Access-Control-Allow-Headers')
+                };
+                
+                logResult('cors-result', `✅ CORS preflight works! Headers: ${JSON.stringify(corsHeaders)}`);
+            } catch (error) {
+                logResult('cors-result', `❌ CORS preflight failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+        
+        async function testFullAPI() {
+            logResult('api-result', 'Testing full API call...');
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ text: 'Hello world' })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                logResult('api-result', `✅ Full API call works! Response: ${JSON.stringify(data).substring(0, 100)}...`);
+            } catch (error) {
+                logResult('api-result', `❌ Full API call failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+        
+        async function testAlternative() {
+            logResult('alt-result', 'Testing alternative approach...');
+            
+            try {
+                // Try with different fetch options
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'cors',
+                    credentials: 'omit',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: 'Test' })
+                });
+                
+                const data = await response.json();
+                logResult('alt-result', `✅ Alternative approach works!`);
+            } catch (error) {
+                logResult('alt-result', `❌ Alternative approach failed: ${error.name} - ${error.message}`, true);
+            }
+        }
+    </script>
+</body>
+</html>

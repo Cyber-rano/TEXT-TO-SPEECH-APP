@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoiceSynth Pro - Fallback Solution</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2c3e50);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(25, 35, 60, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        header {
+            padding: 25px 30px;
+            background: rgba(15, 25, 45, 0.7);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            color: #4cc9f0;
+        }
+
+        .logo h1 {
+            font-weight: 600;
+            font-size: 24px;
+            background: linear-gradient(to right, #4cc9f0, #4361ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .input-section h3 {
+            margin-bottom: 20px;
+            color: #4cc9f0;
+            font-size: 18px;
+        }
+
+        .text-input {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 16px;
+            resize: vertical;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .text-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .char-count {
+            text-align: right;
+            margin-top: 10px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .settings {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .setting-group {
+            margin-bottom: 20px;
+        }
+
+        .setting-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #4cc9f0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .setting-group select,
+        .setting-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .setting-group input[type="range"] {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            border-radius: 3px;
+        }
+
+        .setting-group input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4cc9f0;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4361ee, #3a0ca3);
+            color: white;
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #3a0ca3, #4361ee);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status.success {
+            background: rgba(76, 201, 240, 0.2);
+            border: 1px solid #4cc9f0;
+            color: #4cc9f0;
+        }
+
+        .status.error {
+            background: rgba(255, 107, 107, 0.2);
+            border: 1px solid #ff6b6b;
+            color: #ff6b6b;
+        }
+
+        .status.info {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid #ffc107;
+            color: #ffc107;
+        }
+
+        .audio-player {
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-microphone"></i>
+                <h1>VoiceSynth Pro</h1>
+            </div>
+            <div class="status info" id="status">
+                <i class="fas fa-info-circle"></i>
+                Using Browser Speech Synthesis (Fallback Mode)
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h3><i class="fas fa-edit"></i> Text Input</h3>
+                <textarea 
+                    id="textInput" 
+                    class="text-input" 
+                    placeholder="Enter your text here... (Maximum 5000 characters)"
+                    maxlength="5000"
+                >Hello, this is a test of the VoiceSynth Pro text-to-speech system. The API is currently not accessible, so we're using the browser's built-in speech synthesis as a fallback.</textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span>/5000 characters
+                </div>
+            </div>
+
+            <div class="settings">
+                <h3><i class="fas fa-cog"></i> Voice Settings</h3>
+                
+                <div class="setting-group">
+                    <label for="voiceSelect">Voice</label>
+                    <select id="voiceSelect">
+                        <option value="">Default Voice</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="rateSlider">Speed: <span id="rateValue">1.0</span></label>
+                    <input type="range" id="rateSlider" min="0.5" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="setting-group">
+                    <label for="pitchSlider">Pitch: <span id="pitchValue">1.0</span></label>
+                    <input type="range" id="pitchSlider" min="0.5" max="2" step="0.1" value="1">
+                </div>
+
+                <div class="setting-group">
+                    <label for="volumeSlider">Volume: <span id="volumeValue">1.0</span></label>
+                    <input type="range" id="volumeSlider" min="0" max="1" step="0.1" value="1">
+                </div>
+
+                <div class="action-buttons">
+                    <button id="speakBtn" class="btn btn-primary">
+                        <i class="fas fa-play"></i>
+                        Generate Speech
+                    </button>
+                    <button id="stopBtn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-stop"></i>
+                        Stop
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // VoiceSynth Pro - Fallback Solution
+        class VoiceSynthPro {
+            constructor() {
+                this.textInput = document.getElementById('textInput');
+                this.charCount = document.getElementById('charCount');
+                this.voiceSelect = document.getElementById('voiceSelect');
+                this.rateSlider = document.getElementById('rateSlider');
+                this.pitchSlider = document.getElementById('pitchSlider');
+                this.volumeSlider = document.getElementById('volumeSlider');
+                this.speakBtn = document.getElementById('speakBtn');
+                this.stopBtn = document.getElementById('stopBtn');
+                this.status = document.getElementById('status');
+                
+                this.voices = [];
+                this.isSpeaking = false;
+                
+                this.init();
+            }
+            
+            init() {
+                this.loadVoices();
+                this.setupEventListeners();
+                this.updateCharCount();
+            }
+            
+            loadVoices() {
+                // Load voices when they become available
+                if (speechSynthesis.onvoiceschanged !== undefined) {
+                    speechSynthesis.onvoiceschanged = () => {
+                        this.populateVoices();
+                    };
+                }
+                
+                // Load voices immediately if already available
+                this.populateVoices();
+            }
+            
+            populateVoices() {
+                this.voices = speechSynthesis.getVoices();
+                this.voiceSelect.innerHTML = '<option value="">Default Voice</option>';
+                
+                this.voices.forEach((voice, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = `${voice.name} (${voice.lang})`;
+                    this.voiceSelect.appendChild(option);
+                });
+            }
+            
+            setupEventListeners() {
+                this.textInput.addEventListener('input', () => this.updateCharCount());
+                
+                this.rateSlider.addEventListener('input', (e) => {
+                    document.getElementById('rateValue').textContent = e.target.value;
+                });
+                
+                this.pitchSlider.addEventListener('input', (e) => {
+                    document.getElementById('pitchValue').textContent = e.target.value;
+                });
+                
+                this.volumeSlider.addEventListener('input', (e) => {
+                    document.getElementById('volumeValue').textContent = e.target.value;
+                });
+                
+                this.speakBtn.addEventListener('click', () => this.speak());
+                this.stopBtn.addEventListener('click', () => this.stop());
+            }
+            
+            updateCharCount() {
+                const count = this.textInput.value.length;
+                this.charCount.textContent = count;
+                
+                if (count > 5000) {
+                    this.charCount.style.color = '#ff6b6b';
+                } else if (count > 4000) {
+                    this.charCount.style.color = '#ffc107';
+                } else {
+                    this.charCount.style.color = 'rgba(255, 255, 255, 0.7)';
+                }
+            }
+            
+            speak() {
+                const text = this.textInput.value.trim();
+                
+                if (!text) {
+                    this.showStatus('Please enter some text', 'error');
+                    return;
+                }
+                
+                if (text.length > 5000) {
+                    this.showStatus('Text is too long. Maximum 5000 characters allowed.', 'error');
+                    return;
+                }
+                
+                this.isSpeaking = true;
+                this.speakBtn.disabled = true;
+                this.stopBtn.disabled = false;
+                
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                // Set voice
+                if (this.voiceSelect.value) {
+                    utterance.voice = this.voices[this.voiceSelect.value];
+                }
+                
+                // Set properties
+                utterance.rate = parseFloat(this.rateSlider.value);
+                utterance.pitch = parseFloat(this.pitchSlider.value);
+                utterance.volume = parseFloat(this.volumeSlider.value);
+                
+                // Event handlers
+                utterance.onstart = () => {
+                    this.showStatus('Speaking...', 'info');
+                };
+                
+                utterance.onend = () => {
+                    this.isSpeaking = false;
+                    this.speakBtn.disabled = false;
+                    this.stopBtn.disabled = true;
+                    this.showStatus('Speech completed', 'success');
+                };
+                
+                utterance.onerror = (event) => {
+                    this.isSpeaking = false;
+                    this.speakBtn.disabled = false;
+                    this.stopBtn.disabled = true;
+                    this.showStatus(`Speech error: ${event.error}`, 'error');
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+            
+            stop() {
+                speechSynthesis.cancel();
+                this.isSpeaking = false;
+                this.speakBtn.disabled = false;
+                this.stopBtn.disabled = true;
+                this.showStatus('Speech stopped', 'info');
+            }
+            
+            showStatus(message, type) {
+                this.status.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-triangle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${message}`;
+                this.status.className = `status ${type}`;
+            }
+        }
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            new VoiceSynthPro();
+        });
+    </script>
+</body>
+</html>
