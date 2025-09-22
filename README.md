@@ -1,13 +1,8 @@
 # TEXT-TO-SPEECH-APP
-A serverless app that converts text to speech 
 
----
+A **serverless text-to-speech application** built with AWS services. It converts text to speech making it easy for student and language learners and to help content creators convert blogs into podcast
 
-# 🎤 AWS Text-to-Speech (TTS) Application
-
-A **scalable, serverless text-to-speech application** built with AWS services. It provides secure user authentication, real-time speech synthesis, and comprehensive monitoring using AWS best practices.
-
-Link: http://my-tts-website-terraform.s3-website.us-east-2.amazonaws.com/
+Link: http://tts-website-bce4c82c.s3-website-us-east-1.amazonaws.com/
 ---
 
 ## 🏗️ Architecture Overview
@@ -39,17 +34,6 @@ Link: http://my-tts-website-terraform.s3-website.us-east-2.amazonaws.com/
 | **API Gateway** | HTTP API    | RESTful API endpoint               |
 | **Polly**       | TTS Service | Speech synthesis                   |
 
-### Monitoring & Logging
-
-| Service        | Resource   | Purpose                             |
-| -------------- | ---------- | ----------------------------------- |
-| **CloudWatch** | Log Groups | Capture Lambda & API Gateway logs   |
-| **CloudWatch** | 4 Alarms   | Monitor errors, latency, duration   |
-| **CloudWatch** | Dashboard  | Centralized metrics visualization   |
-| **SNS**        | Topic      | Email alerts for system issues      |
-| **X-Ray**      | Tracing    | Performance and dependency analysis |
-
----
 
 ## 📁 Project Structure
 
