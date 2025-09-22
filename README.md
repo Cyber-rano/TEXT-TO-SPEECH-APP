@@ -103,75 +103,19 @@ terraform-tts-deployment/
    terraform validate
    terraform apply
    ```
-
-4. **Deploy Monitoring (Optional)**
-
-   ```bash
-   # Windows
-   deploy-monitoring.bat
-
-   # Linux/Mac
-   terraform apply -var="alert_email=maryakussah123@gmail.com"
    ```
-
-5. **Upload Frontend**
-
-   ```bash
-   aws s3 cp index.html s3://my-tts-website-terraform/
-   ```
-
 ---
-
-## 📊 Monitoring & Alerts
-
-* **CloudWatch Alarms**:
-
-  * Lambda error rate >5%
-  * Lambda duration >10s
-  * API 4XX >10/5min
-  * API 5XX (any occurrence)
-
-* **Log Groups**:
-
-  * `/aws/lambda/PollyTTSLambda`
-  * `/aws/apigateway/PollyTTSAPI`
-
-* **Dashboards**:
-
-  * Lambda: invocations, errors, duration
-  * API Gateway: requests, latency, errors
-
----
-
-## 🔧 Configuration
-
-### Voice Options
-
-```javascript
-const voices = {
-  US: ['Joanna', 'Matthew', 'Ivy', 'Justin', 'Salli', 'Kimberly', 'Joey'],
-  UK: ['Amy', 'Brian', 'Emma'],
-  AU: ['Russell', 'Nicole', 'Olivia'],
-  IN: ['Raveena', 'Aditi']
-};
-```
-
-### Session Management
-
-* Auto-logout after 10 minutes
-* Monitors mouse, keyboard, touch, scroll events
-* Silent logout → redirect to login
 
 ### Limits
 
-* Max input: **3000 characters**
-* Warning at 2500+ characters
+* Max input: **5000 characters**
+* Warning at 4500+ characters
 * MP3 output, 7-day retention, 1-hour Presigned URLs
 
 ---
 
-## 🎯 Roadmap
-🔮 Planned Improvements
+## 🌥️ Roadmap for Future Improvement 
+Future Improvements
 
 **CloudFront (or Amplify)**
 
@@ -213,13 +157,14 @@ Optionally integrate CloudFront Signed URLs for global sharing with better perfo
 
 ### Feature Additions
 
-* [x] Session Timeout ✅
-* [x] Multi-Country Voices ✅
-* [x] Auto-Regeneration ✅
+* [ ] Session Timeout
+* [ ] Audio output types (Speaker, headphone, bluetooth)
+* [x] Multi-Country Voices 
+* [ ] Auto-Regeneration 
 * [ ] SSML support
-* [ ] Voice cloning
+* [ ] Real-Time Voice cloning
 * [ ] Batch processing
-* [ ] Audio effects (speed, pitch, volume)
+* [ ] Audio effects (speed, pitch, volume) 
 * [ ] Conversion history
 * [ ] Audio sharing links
 
@@ -244,28 +189,6 @@ Optionally integrate CloudFront Signed URLs for global sharing with better perfo
 
 ---
 
-## 🐛 Troubleshooting
-
-**Authentication Errors**
-
-```bash
-aws cognito-idp describe-user-pool --user-pool-id <pool-id>
-```
-
-**Lambda Timeouts**
-
-```bash
-aws logs describe-log-groups --log-group-name-prefix "/aws/lambda"
-```
-
-**S3 Upload Issues**
-
-```bash
-aws s3api get-bucket-policy --bucket my-tts-website-terraform
-```
-
----
-
 ## 🤝 Contributing
 
 1. Fork the repo
@@ -275,22 +198,13 @@ aws s3api get-bucket-policy --bucket my-tts-website-terraform
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
-
 ---
 
 ## 🙏 Acknowledgments
 
 * AWS Documentation & Sample Code
 * Terraform AWS Provider
-* Bootstrap CSS Framework
 * Amazon Polly Voice Samples
 * Amazon Q
-
----
-
-✨ If you find this project useful, please **star ⭐ the repo** to support development!
 
 ---
