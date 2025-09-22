@@ -10,7 +10,7 @@ This project enables users to input text and receive audio output using AWS serv
 ## Architecture
 
 <p align="center">
-  <img src="Architecture/Screenshot.png" alt="App Screenshot" width="700"/>
+  <img src="Architecture/image.png" alt="App Screenshot" width="700"/>
 </p>
  
 
