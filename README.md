@@ -9,6 +9,8 @@ This project enables users to input text and receive audio output using AWS serv
 
 ## Architecture
 
+![Project Architecture](architecture/Untitled%20Diagram.drawio.png)
+
 - **Frontend**: React 18 app with functional components, hooks, and responsive design.
 - **Backend**: Python Lambda function for text-to-speech conversion.
 - **API Gateway**: Provides RESTful endpoints for the frontend to interact with Lambda.
