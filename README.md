@@ -9,7 +9,10 @@ This project enables users to input text and receive audio output using AWS serv
 
 ## Architecture
 
-![image alt](architecture/image.png)
+<p align="center">
+  <img src="architecture/image.png" alt="App Screenshot" width="700"/>
+</p>
+ 
 
 - **Frontend**: React 18 app with functional components, hooks, and responsive design.
 - **Backend**: Python Lambda function for text-to-speech conversion.
