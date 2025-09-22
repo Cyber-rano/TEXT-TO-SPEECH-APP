@@ -6,11 +6,9 @@ Link: http://tts-website-bce4c82c.s3-website-us-east-1.amazonaws.com/
 ---
 
 ## 🏗️ Architecture Overview
+ 
+![image alt](https://github.com/Cyber-rano/TEXT-TO-SPEECH-APP/blob/main/Architecture/Untitled%20Diagram.drawio.png?raw=true)
 
-<img width="926" height="530" alt="TTS Architecture" src="architecture img/Screenshot 2025-09-18 124122.png" />  
-
-
-<img width="926" height="530" alt="TTS Architecture" src="architecture img/Screenshot 2025-09-18 124320.png" />  
 
 **Architecture Component:**
 
